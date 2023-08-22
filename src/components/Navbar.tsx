@@ -52,10 +52,10 @@ export default function Navbar() {
               <Link href="/">Home</Link>
             </li>
             <li>
-              <Link href="/auth/login">Login</Link>
+              <Link href="">Login</Link>
             </li>
             <li>
-              <Link href="/auth/register">Register</Link>
+              <Link href="">Register</Link>
             </li>
           </ul>
         </Box>

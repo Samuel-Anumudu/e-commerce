@@ -16,7 +16,7 @@ export default function LoginLayout({
 }) {
   return (
     <html lang="en">
-      <body className={montserrat.className}>
+      <body suppressHydrationWarning={true} className={montserrat.className}>
         <main>{children}</main>
       </body>
     </html>
