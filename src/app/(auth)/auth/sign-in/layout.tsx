@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   description: "Best Audio Gadgets Store",
 };
 
-export default function LoginLayout({
+export default function SignInLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={montserrat.className}>
+      <body className={montserrat.className}>
         <main>{children}</main>
       </body>
     </html>

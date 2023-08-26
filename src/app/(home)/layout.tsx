@@ -18,6 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      {/* suppressHydrationWarning={true}: put this attribute into body to stop browser log error*/}
       <body className={montserrat.className}>
         <header className="bg-darkgrey">
           <Navbar />

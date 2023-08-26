@@ -16,6 +16,10 @@ hr.divider {
 hr.divider.sign-in:after {
   content: "or sign in with email";
 }
+
+hr.divider.sign-up:after {
+  content: "or sign up with email";
+}
 hr.divider:after {
   display: inline-block;
   position: relative;

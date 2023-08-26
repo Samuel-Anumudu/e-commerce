@@ -2,14 +2,58 @@
 
 import { Button, TextField } from "@mui/material";
 import Link from "next/link";
+import {
+  signInWithGooglePopup,
+  createUserDocumentFromAuth,
+  signInAuthUserWithEmailAndPassword,
+} from "@/utils/firebase/firebase.config";
 
-function Login() {
+import { useState } from "react";
+
+interface FormData {
+  email: string;
+  password: string;
+}
+function SignIn() {
+  const [formFields, setFormFields] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+
+  const { email, password } = formFields;
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormFields((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const resetFormFields = () => {
+    setFormFields({
+      email: "",
+      password: "",
+    });
+  };
+
+  const onSignInUser = async () => {
+    if (!email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
+    try {
+      const res = await signInAuthUserWithEmailAndPassword(email, password);
+      resetFormFields();
+      console.log(res);
+    } catch (error) {
+      console.log("There was an error signing in the user", error);
+    }
+  };
+
   return (
     <section>
       <div className="container mx-auto px-4">
         <h2>Sign in to start shopping!</h2>
         <div className="sign-in__btn">
-          <Link href="/">
+          <Link href="">
             <Button className="w-full" variant="outlined">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -51,37 +95,46 @@ function Login() {
         <hr className="divider sign-in"></hr>
         <form>
           <div className="input-group">
-            <label htmlFor="email">Email</label>
             <TextField
               id="email"
               type="email"
               name="email"
+              value={formFields.email}
               label="Email"
               variant="outlined"
+              className="w-full"
+              onChange={handleFormChange}
             />
           </div>
           <div className="input-group">
-            <div>
-              <label htmlFor="password">Password</label>
+            <div className="flex justify-end">
               <span>Forgot password?</span>
             </div>
             <TextField
               id="password"
               name="password"
+              value={formFields.password}
               label="Password"
               type="password"
+              className="w-full"
+              onChange={handleFormChange}
             />
           </div>
 
-          <Link href="/">
-            <Button className="w-full bg-blue-600" variant="contained">
+          <Link href="">
+            <Button
+              onClick={onSignInUser}
+              className="w-full bg-blue-600"
+              variant="contained"
+            >
               Sign in
             </Button>
           </Link>
         </form>
         <div className="sign-up">
           <p>
-            Don&apos;t have an account? <Link href="/">Sign up</Link>
+            Don&apos;t have an account?
+            <Link href="/auth/register">Sign up</Link>
           </p>
         </div>
       </div>
@@ -89,4 +142,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default SignIn;
