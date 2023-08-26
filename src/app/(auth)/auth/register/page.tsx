@@ -40,6 +40,10 @@ function Register() {
   };
 
   const onRegisterUser = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Please fill in all fields");
+      return;
+    }
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -51,7 +55,8 @@ function Register() {
         password
       );
 
-      await createUserDocumentFromAuth(user);
+      await createUserDocumentFromAuth(user, { name });
+      resetFormFields();
     } catch (error) {
       if ((error as any).code === "auth/email-already-in-use") {
         alert("Email already in use");
@@ -59,7 +64,6 @@ function Register() {
         console.log("There was an error registering the user", error);
       }
     }
-    resetFormFields();
   };
 
   return (

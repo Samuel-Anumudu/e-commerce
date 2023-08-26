@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, TextField } from "@mui/material";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   signInWithGooglePopup,
@@ -21,10 +22,21 @@ function SignIn() {
   });
 
   const { email, password } = formFields;
-
+  const router = useRouter();
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormFields((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  // Sign in with Google
+
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithGooglePopup();
+      router.push("/");
+    } catch (error) {
+      alert("Could not sign in with Google");
+    }
   };
 
   const resetFormFields = () => {
@@ -40,11 +52,14 @@ function SignIn() {
       return;
     }
     try {
-      const res = await signInAuthUserWithEmailAndPassword(email, password);
+      await signInAuthUserWithEmailAndPassword(email, password);
       resetFormFields();
-      console.log(res);
     } catch (error) {
-      console.log("There was an error signing in the user", error);
+      if ((error as any).code === "auth/user-not-found") {
+        alert("User not found! Please sign up");
+      } else {
+        console.log("There was an error signing in the user", error);
+      }
     }
   };
 
@@ -54,7 +69,11 @@ function SignIn() {
         <h2>Sign in to start shopping!</h2>
         <div className="sign-in__btn">
           <Link href="">
-            <Button className="w-full" variant="outlined">
+            <Button
+              onClick={signInWithGoogle}
+              className="w-full"
+              variant="outlined"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"

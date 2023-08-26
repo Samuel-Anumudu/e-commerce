@@ -36,20 +36,24 @@ export const auth = getAuth();
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
-export const createUserDocumentFromAuth = async (userAuth: any) => {
+export const createUserDocumentFromAuth = async (
+  userAuth: any,
+  additionalInfo: object = {}
+) => {
   if (!userAuth) return;
   const userDocRef = doc(db, "users", userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
 
   if (!userSnapshot.exists()) {
-    const { name, email } = userAuth;
+    const { displayName, email } = userAuth;
     const createdAt = new Date();
 
     try {
       await setDoc(userDocRef, {
-        name,
+        displayName,
         email,
         createdAt,
+        ...additionalInfo,
       });
     } catch (error: any) {
       console.log("error creating the user", error.message);
