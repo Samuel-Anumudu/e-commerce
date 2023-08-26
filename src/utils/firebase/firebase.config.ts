@@ -78,4 +78,30 @@ export const signInAuthUserWithEmailAndPassword = async (
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
+// Sign up with Google
+
+export const signUpAuthUserWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    // Check for user
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    // If user doesn't exist, create user
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        name: user.displayName,
+        email: user.email,
+        createAt: new Date(),
+      });
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const db = getFirestore();

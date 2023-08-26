@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   signInWithGooglePopup,
-  createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
 } from "@/utils/firebase/firebase.config";
 
@@ -23,13 +22,20 @@ function SignIn() {
 
   const { email, password } = formFields;
   const router = useRouter();
+
+  const resetFormFields = () => {
+    setFormFields({
+      email: "",
+      password: "",
+    });
+  };
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormFields((prevState) => ({ ...prevState, [name]: value }));
   };
 
   // Sign in with Google
-
   const signInWithGoogle = async () => {
     try {
       await signInWithGooglePopup();
@@ -39,13 +45,6 @@ function SignIn() {
     }
   };
 
-  const resetFormFields = () => {
-    setFormFields({
-      email: "",
-      password: "",
-    });
-  };
-
   const onSignInUser = async () => {
     if (!email || !password) {
       alert("Please fill in all fields");
@@ -53,10 +52,14 @@ function SignIn() {
     }
     try {
       await signInAuthUserWithEmailAndPassword(email, password);
+
+      router.push("/");
       resetFormFields();
     } catch (error) {
       if ((error as any).code === "auth/user-not-found") {
         alert("User not found! Please sign up");
+      } else if ((error as any).code === "auth/wrong-password") {
+        alert("Wrong password! Please try again");
       } else {
         console.log("There was an error signing in the user", error);
       }

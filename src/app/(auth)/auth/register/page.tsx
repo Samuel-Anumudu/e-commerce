@@ -2,11 +2,16 @@
 
 import { Button, TextField } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "@/utils/firebase/firebase.config";
+
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "@/utils/firebase/firebase.config";
 
 interface FormData {
   name: string;
@@ -22,6 +27,8 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
+
+  const router = useRouter();
 
   const { name, email, password, confirmPassword } = formFields;
 
@@ -39,6 +46,31 @@ function Register() {
     setFormFields((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const onRegisterWithGoogle = async () => {
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check for user
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      // If user, doesn't exist, create user
+      if (!docSnap.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName,
+          email: user.email,
+          createdAt: new Date(),
+        });
+      }
+      router.push("/");
+    } catch (error) {
+      alert("Could not authorize with Google");
+    }
+  };
+
   const onRegisterUser = async () => {
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields");
@@ -54,7 +86,6 @@ function Register() {
         email,
         password
       );
-
       await createUserDocumentFromAuth(user, { name });
       resetFormFields();
     } catch (error) {
@@ -73,6 +104,7 @@ function Register() {
         <div className="sign-up__btn">
           <Link href="">
             <Button
+              onClick={onRegisterWithGoogle}
               type="button"
               className="w-full bg-black text-white"
               variant="outlined"
