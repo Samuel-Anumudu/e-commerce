@@ -1,17 +1,16 @@
 "use client";
 
 import { Button, TextField } from "@mui/material";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "@/utils/firebase/firebase.config";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
+  signInWithGooglePopup,
 } from "@/utils/firebase/firebase.config";
-
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "@/utils/firebase/firebase.config";
+import Link from "next/link";
 
 interface FormData {
   name: string;
@@ -48,10 +47,8 @@ function Register() {
 
   const onRegisterWithGoogle = async () => {
     try {
-      const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const res = await signInWithGooglePopup();
+      const user = res.user;
 
       // Check for user
       const docRef = doc(db, "users", user.uid);
