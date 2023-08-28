@@ -8,6 +8,8 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+// Interfaces & Types
+import { Product } from "../models/product.model";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyADZfV20DYhzfn-T-jqGMdWGRmRiIUuCqA",
@@ -19,7 +21,16 @@ const firebaseConfig = {
 };
 
 // FireStore
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+  query,
+  getDocs,
+} from "firebase/firestore";
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
@@ -35,6 +46,31 @@ googleProvider.setCustomParameters({
 export const auth = getAuth();
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
+export const db = getFirestore();
+export const addCollectionAndDocuments = async (
+  collectionKey: string,
+  productToAdd: Product[]
+) => {
+  const collectionRef = collection(db, collectionKey);
+  const batch = writeBatch(db);
+
+  productToAdd.forEach((product) => {
+    const docRef = doc(collectionRef, product.category.toLowerCase());
+    batch.set(docRef, product);
+  });
+
+  await batch.commit();
+  console.log("Product created!!!");
+};
+
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, "categories");
+  const q = query(collectionRef);
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
+
+  return data;
+};
 
 export const createUserDocumentFromAuth = async (
   userAuth: any,
@@ -77,5 +113,3 @@ export const signInAuthUserWithEmailAndPassword = async (
   if (!email || !password) return;
   return await signInWithEmailAndPassword(auth, email, password);
 };
-
-export const db = getFirestore();
