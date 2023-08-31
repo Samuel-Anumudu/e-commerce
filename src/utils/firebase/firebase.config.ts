@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 
 // Interfaces & Types
-import { Product } from "../models/product.model";
+import { Products } from "../models/product.model";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyADZfV20DYhzfn-T-jqGMdWGRmRiIUuCqA",
@@ -49,12 +49,12 @@ export const signInWithGooglePopup = () =>
 export const db = getFirestore();
 export const addCollectionAndDocuments = async (
   collectionKey: string,
-  productToAdd: Product[]
+  productToAdd: {}[]
 ) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
 
-  productToAdd.forEach((product) => {
+  productToAdd.forEach((product: any) => {
     const docRef = doc(collectionRef, product.category.toLowerCase());
     batch.set(docRef, product);
   });
@@ -67,9 +67,16 @@ export const getCategoriesAndDocuments = async () => {
   const collectionRef = collection(db, "categories");
   const q = query(collectionRef);
   const querySnapshot = await getDocs(q);
-  const data = querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
+  const categoryMap = querySnapshot.docs.reduce(
+    (accumulator: Products, docSnapshot) => {
+      const { category, items } = docSnapshot.data();
+      accumulator[category.toLowerCase()] = items;
+      return accumulator;
+    },
+    {}
+  );
 
-  return data;
+  return categoryMap;
 };
 
 export const createUserDocumentFromAuth = async (

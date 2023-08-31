@@ -1,50 +1,38 @@
-export interface Product {
+interface ImageUrls {
+  mobile: string;
+  tablet: string;
+  desktop: string;
+}
+
+interface IncludesItem {
+  quantity: number;
+  item: string;
+}
+
+export interface Products {
+  [category: string]: {
+    id: number;
+    slug: string;
+    name: string;
+    image: ImageUrls;
+    categoryImage: ImageUrls;
+    new: boolean;
+    price: number;
+    description: string;
+    features: string;
+    includes: IncludesItem[];
+  }[];
+}
+
+export interface SingleProduct {
   id: number;
   slug: string;
   name: string;
-  image: {
-    mobile: string;
-    tablet: string;
-    desktop: string;
-  };
-  category: string;
-  categoryImage?: {
-    mobile: string;
-    tablet: string;
-    desktop: string;
-  };
+  image: ImageUrls;
+  categoryImage: ImageUrls;
   new: boolean;
   price: number;
   description: string;
   features: string;
-  includes: {
-    quantity: number;
-    item: string;
-  }[];
-  gallery?: {
-    first: {
-      mobile: string;
-      tablet: string;
-      desktop: string;
-    };
-    second: {
-      mobile: string;
-      tablet: string;
-      desktop: string;
-    };
-    third: {
-      mobile: string;
-      tablet: string;
-      desktop: string;
-    };
-  };
-  others?: {
-    slug: string;
-    name: string;
-    image: {
-      mobile: string;
-      tablet: string;
-      desktop: string;
-    };
-  }[];
+  includes: IncludesItem[];
 }
