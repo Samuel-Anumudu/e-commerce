@@ -24,7 +24,7 @@ export interface Products {
   }[];
 }
 
-export interface SingleProduct {
+export interface Product {
   id: number;
   slug: string;
   name: string;
